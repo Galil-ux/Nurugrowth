@@ -1,0 +1,363 @@
+{
+  "entities": {
+    "User": {
+      "collection": "users",
+      "fields": {
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Full name or handle"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role: admin | editor | viewer"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of registration"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "ISO timestamp of last session"
+        }
+      },
+      "rules": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && (request.auth.uid == resource.id || request.auth.token.email == 'mosemirano6538@gmail.com' || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')"
+      }
+    },
+    "BlogPost": {
+      "collection": "blog_posts",
+      "fields": {
+        "title": {
+          "type": "string",
+          "description": "Article headline"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Category tag like RESEARCH, STRATEGY, MARKET DATA, FINANCE"
+        },
+        "date": {
+          "type": "string",
+          "description": "Display date string"
+        },
+        "readTime": {
+          "type": "string",
+          "description": "Estimated reading duration"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author name"
+        },
+        "authorRole": {
+          "type": "string",
+          "description": "Author company or domain role"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Short executive summary"
+        },
+        "img": {
+          "type": "string",
+          "description": "Cover photo URL"
+        },
+        "fullContent": {
+          "type": "array",
+          "description": "List of paragraph sections or markdown text"
+        },
+        "status": {
+          "type": "string",
+          "description": "published | draft"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether pinned to hero"
+        },
+        "views": {
+          "type": "number",
+          "description": "Page view counter"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO last modified timestamp"
+        }
+      },
+      "rules": {
+        "read": "resource.data.status == 'published' || (request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'] || request.auth.token.email == 'mosemirano6538@gmail.com'))",
+        "write": "request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'] || request.auth.token.email == 'mosemirano6538@gmail.com')"
+      }
+    },
+    "BlogComment": {
+      "collection": "blog_comments",
+      "fields": {
+        "postId": {
+          "type": "string",
+          "description": "ID of related blog post"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Name of commenter"
+        },
+        "authorRole": {
+          "type": "string",
+          "description": "Role or company of commenter"
+        },
+        "content": {
+          "type": "string",
+          "description": "Body of comment"
+        },
+        "category": {
+          "type": "string",
+          "description": "thought | question | general"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        },
+        "likes": {
+          "type": "number",
+          "description": "Upvote count"
+        }
+      },
+      "rules": {
+        "read": "true",
+        "write": "true"
+      }
+    },
+    "QuoteRequest": {
+      "collection": "quote_requests",
+      "fields": {
+        "companyName": {
+          "type": "string",
+          "description": "Solar business / organization name"
+        },
+        "website": {
+          "type": "string",
+          "description": "Company URL"
+        },
+        "country": {
+          "type": "string",
+          "description": "Primary operating market"
+        },
+        "targetSegment": {
+          "type": "string",
+          "description": "C&I, Residential, Mini-Grid, Solar Pump, Agri-PV"
+        },
+        "productPackage": {
+          "type": "string",
+          "description": "Selected asset pack or custom scope"
+        },
+        "systemCapacityKWp": {
+          "type": "string",
+          "description": "Target project scale in kWp or MWp"
+        },
+        "monthlyAcquisitionGoal": {
+          "type": "string",
+          "description": "Target monthly client acquisitions"
+        },
+        "currentAdSpend": {
+          "type": "string",
+          "description": "Current marketing/ad spend range"
+        },
+        "painPoints": {
+          "type": "array",
+          "description": "Selected challenges"
+        },
+        "customNotes": {
+          "type": "string",
+          "description": "Detailed project brief"
+        },
+        "contactName": {
+          "type": "string",
+          "description": "Decision maker full name"
+        },
+        "contactRole": {
+          "type": "string",
+          "description": "Decision maker job title"
+        },
+        "email": {
+          "type": "string",
+          "description": "Official business email"
+        },
+        "phone": {
+          "type": "string",
+          "description": "WhatsApp or phone number"
+        },
+        "preferredSchedule": {
+          "type": "string",
+          "description": "Requested meeting timeframe"
+        },
+        "status": {
+          "type": "string",
+          "description": "new | in_review | contacted | proposal_sent | won | archived"
+        },
+        "adminNotes": {
+          "type": "string",
+          "description": "Internal team notes"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of quote request"
+        }
+      },
+      "rules": {
+        "read": "request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'] || request.auth.token.email == 'mosemirano6538@gmail.com')",
+        "write": "true"
+      }
+    },
+    "EmailSubscriber": {
+      "collection": "email_subscribers",
+      "fields": {
+        "email": {
+          "type": "string",
+          "description": "Subscriber / lead email address"
+        },
+        "name": {
+          "type": "string",
+          "description": "Subscriber or contact person name"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Organization or solar company"
+        },
+        "source": {
+          "type": "string",
+          "description": "growth_lab | quote_onboarding | newsletter_footer | contact_direct"
+        },
+        "sourceLabel": {
+          "type": "string",
+          "description": "Human-readable submission source"
+        },
+        "country": {
+          "type": "string",
+          "description": "Operating jurisdiction"
+        },
+        "welcomeEmailSent": {
+          "type": "boolean",
+          "description": "Whether automated polite welcome email was dispatched"
+        },
+        "welcomeEmailSentAt": {
+          "type": "string",
+          "description": "Timestamp of email dispatch"
+        },
+        "welcomeEmailSubject": {
+          "type": "string",
+          "description": "Subject of welcome email"
+        },
+        "welcomeEmailBody": {
+          "type": "string",
+          "description": "Full text of sent confirmation & welcome email"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of subscriber creation"
+        }
+      },
+      "rules": {
+        "read": "request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'] || request.auth.token.email == 'mosemirano6538@gmail.com')",
+        "write": "true"
+      }
+    },
+    "SiteSettings": {
+      "collection": "site_settings",
+      "fields": {
+        "linkedinUrl": {
+          "type": "string",
+          "description": "LinkedIn URL"
+        },
+        "instagramUrl": {
+          "type": "string",
+          "description": "Instagram URL"
+        },
+        "facebookUrl": {
+          "type": "string",
+          "description": "Facebook URL"
+        },
+        "xUrl": {
+          "type": "string",
+          "description": "X (Twitter) URL"
+        },
+        "whatsappUrl": {
+          "type": "string",
+          "description": "WhatsApp URL"
+        },
+        "inquiriesEmail": {
+          "type": "string",
+          "description": "Contact email"
+        },
+        "operationalBase": {
+          "type": "string",
+          "description": "Location"
+        },
+        "footerText": {
+          "type": "string",
+          "description": "Footer copyright text"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        }
+      },
+      "rules": {
+        "read": "true",
+        "write": "request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'] || request.auth.token.email == 'mosemirano6538@gmail.com')"
+      }
+    },
+    "AppReview": {
+      "collection": "app_reviews",
+      "fields": {
+        "authorName": {
+          "type": "string",
+          "description": "Author name"
+        },
+        "authorRole": {
+          "type": "string",
+          "description": "Role"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Company name"
+        },
+        "rating": {
+          "type": "number",
+          "description": "1-5 rating"
+        },
+        "content": {
+          "type": "string",
+          "description": "Review text"
+        },
+        "mediaUrl": {
+          "type": "string",
+          "description": "Image/Video URL"
+        },
+        "mediaType": {
+          "type": "string",
+          "description": "image or video"
+        },
+        "status": {
+          "type": "string",
+          "description": "pending | approved | rejected"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp"
+        },
+        "verifiedInteraction": {
+          "type": "boolean",
+          "description": "Whether the user interacted with all app features"
+        }
+      },
+      "rules": {
+        "read": "true",
+        "write": "true"
+      }
+    }
+  }
+}

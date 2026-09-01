@@ -1,0 +1,88 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user has admin role
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'mosemirano6538@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    // Helper function to check if user is admin or editor
+    function isEditorOrAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'mosemirano6538@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'])
+      );
+    }
+
+    // Connection Health Check
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // User profiles & RBAC
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Blog Posts Collection
+    match /blog_posts/{postId} {
+      // Anyone can read blog posts
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Blog Comments Collection
+    match /blog_comments/{commentId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Quote & Onboarding Requests
+    match /quote_requests/{requestId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Email Subscribers & Lead Inquiries
+    match /email_subscribers/{subscriberId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Site Settings Collection
+    match /site_settings/{docId} {
+      allow read, write: if true;
+    }
+
+    // App Reviews Collection
+    match /app_reviews/{reviewId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // CMS Credentials Collection
+    match /cms_credentials/{credId} {
+      allow read, write, delete: if true;
+    }
+
+    // CMS Audit Logs Collection
+    match /cms_audit_logs/{logId} {
+      allow read, write, create, delete: if true;
+    }
+  }
+}
